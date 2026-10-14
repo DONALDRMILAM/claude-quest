@@ -1,0 +1,420 @@
+{
+ "lesson-01": {
+  "intro": "lesson-01-intro.mp3",
+  "outro": "lesson-01-outro.mp3",
+  "questions": [
+   "lesson-01-q1.mp3",
+   "lesson-01-q2.mp3",
+   "lesson-01-q3.mp3",
+   "lesson-01-q4.mp3",
+   "lesson-01-q5.mp3"
+  ]
+ },
+ "lesson-02": {
+  "intro": "lesson-02-intro.mp3",
+  "outro": "lesson-02-outro.mp3",
+  "questions": [
+   "lesson-02-q1.mp3",
+   "lesson-02-q2.mp3",
+   "lesson-02-q3.mp3",
+   "lesson-02-q4.mp3",
+   "lesson-02-q5.mp3"
+  ]
+ },
+ "lesson-03": {
+  "intro": "lesson-03-intro.mp3",
+  "outro": "lesson-03-outro.mp3",
+  "questions": [
+   "lesson-03-q1.mp3",
+   "lesson-03-q2.mp3",
+   "lesson-03-q3.mp3",
+   "lesson-03-q4.mp3",
+   "lesson-03-q5.mp3"
+  ]
+ },
+ "lesson-04": {
+  "intro": "lesson-04-intro.mp3",
+  "outro": "lesson-04-outro.mp3",
+  "questions": [
+   "lesson-04-q1.mp3",
+   "lesson-04-q2.mp3",
+   "lesson-04-q3.mp3",
+   "lesson-04-q4.mp3",
+   "lesson-04-q5.mp3"
+  ]
+ },
+ "lesson-05": {
+  "intro": "lesson-05-intro.mp3",
+  "outro": "lesson-05-outro.mp3",
+  "questions": [
+   "lesson-05-q1.mp3",
+   "lesson-05-q2.mp3",
+   "lesson-05-q3.mp3",
+   "lesson-05-q4.mp3",
+   "lesson-05-q5.mp3"
+  ]
+ },
+ "lesson-06": {
+  "intro": "lesson-06-intro.mp3",
+  "outro": "lesson-06-outro.mp3",
+  "questions": [
+   "lesson-06-q1.mp3",
+   "lesson-06-q2.mp3",
+   "lesson-06-q3.mp3",
+   "lesson-06-q4.mp3",
+   "lesson-06-q5.mp3"
+  ]
+ },
+ "lesson-07": {
+  "intro": "lesson-07-intro.mp3",
+  "outro": "lesson-07-outro.mp3",
+  "questions": [
+   "lesson-07-q1.mp3",
+   "lesson-07-q2.mp3",
+   "lesson-07-q3.mp3",
+   "lesson-07-q4.mp3",
+   "lesson-07-q5.mp3"
+  ]
+ },
+ "lesson-08": {
+  "intro": "lesson-08-intro.mp3",
+  "outro": "lesson-08-outro.mp3",
+  "questions": [
+   "lesson-08-q1.mp3",
+   "lesson-08-q2.mp3",
+   "lesson-08-q3.mp3",
+   "lesson-08-q4.mp3",
+   "lesson-08-q5.mp3"
+  ]
+ },
+ "lesson-09": {
+  "intro": "lesson-09-intro.mp3",
+  "outro": "lesson-09-outro.mp3",
+  "questions": [
+   "lesson-09-q1.mp3",
+   "lesson-09-q2.mp3",
+   "lesson-09-q3.mp3",
+   "lesson-09-q4.mp3",
+   "lesson-09-q5.mp3"
+  ]
+ },
+ "lesson-10": {
+  "intro": "lesson-10-intro.mp3",
+  "outro": "lesson-10-outro.mp3",
+  "questions": [
+   "lesson-10-q1.mp3",
+   "lesson-10-q2.mp3",
+   "lesson-10-q3.mp3",
+   "lesson-10-q4.mp3",
+   "lesson-10-q5.mp3"
+  ]
+ },
+ "lesson-11": {
+  "intro": "lesson-11-intro.mp3",
+  "outro": "lesson-11-outro.mp3",
+  "questions": [
+   "lesson-11-q1.mp3",
+   "lesson-11-q2.mp3",
+   "lesson-11-q3.mp3",
+   "lesson-11-q4.mp3",
+   "lesson-11-q5.mp3"
+  ]
+ },
+ "lesson-12": {
+  "intro": "lesson-12-intro.mp3",
+  "outro": "lesson-12-outro.mp3",
+  "questions": [
+   "lesson-12-q1.mp3",
+   "lesson-12-q2.mp3",
+   "lesson-12-q3.mp3",
+   "lesson-12-q4.mp3",
+   "lesson-12-q5.mp3"
+  ]
+ },
+ "lesson-13": {
+  "intro": "lesson-13-intro.mp3",
+  "outro": "lesson-13-outro.mp3",
+  "questions": [
+   "lesson-13-q1.mp3",
+   "lesson-13-q2.mp3",
+   "lesson-13-q3.mp3",
+   "lesson-13-q4.mp3",
+   "lesson-13-q5.mp3"
+  ]
+ },
+ "code101-lesson-01": {
+  "intro": "code101-01-intro.mp3",
+  "outro": "code101-01-outro.mp3",
+  "questions": [
+   "code101-01-q1.mp3",
+   "code101-01-q2.mp3",
+   "code101-01-q3.mp3",
+   "code101-01-q4.mp3",
+   "code101-01-q5.mp3"
+  ]
+ },
+ "code101-lesson-02": {
+  "intro": "code101-02-intro.mp3",
+  "outro": "code101-02-outro.mp3",
+  "questions": [
+   "code101-02-q1.mp3",
+   "code101-02-q2.mp3",
+   "code101-02-q3.mp3",
+   "code101-02-q4.mp3",
+   "code101-02-q5.mp3"
+  ]
+ },
+ "code101-lesson-03": {
+  "intro": "code101-03-intro.mp3",
+  "outro": "code101-03-outro.mp3",
+  "questions": [
+   "code101-03-q1.mp3",
+   "code101-03-q2.mp3",
+   "code101-03-q3.mp3",
+   "code101-03-q4.mp3",
+   "code101-03-q5.mp3"
+  ]
+ },
+ "code101-lesson-04": {
+  "intro": "code101-04-intro.mp3",
+  "outro": "code101-04-outro.mp3",
+  "questions": [
+   "code101-04-q1.mp3",
+   "code101-04-q2.mp3",
+   "code101-04-q3.mp3",
+   "code101-04-q4.mp3",
+   "code101-04-q5.mp3"
+  ]
+ },
+ "code101-lesson-05": {
+  "intro": "code101-05-intro.mp3",
+  "outro": "code101-05-outro.mp3",
+  "questions": [
+   "code101-05-q1.mp3",
+   "code101-05-q2.mp3",
+   "code101-05-q3.mp3",
+   "code101-05-q4.mp3",
+   "code101-05-q5.mp3"
+  ]
+ },
+ "code101-lesson-06": {
+  "intro": "code101-06-intro.mp3",
+  "outro": "code101-06-outro.mp3",
+  "questions": [
+   "code101-06-q1.mp3",
+   "code101-06-q2.mp3",
+   "code101-06-q3.mp3",
+   "code101-06-q4.mp3",
+   "code101-06-q5.mp3"
+  ]
+ },
+ "code101-lesson-07": {
+  "intro": "code101-07-intro.mp3",
+  "outro": "code101-07-outro.mp3",
+  "questions": [
+   "code101-07-q1.mp3",
+   "code101-07-q2.mp3",
+   "code101-07-q3.mp3",
+   "code101-07-q4.mp3",
+   "code101-07-q5.mp3"
+  ]
+ },
+ "code101-lesson-08": {
+  "intro": "code101-08-intro.mp3",
+  "outro": "code101-08-outro.mp3",
+  "questions": [
+   "code101-08-q1.mp3",
+   "code101-08-q2.mp3",
+   "code101-08-q3.mp3",
+   "code101-08-q4.mp3",
+   "code101-08-q5.mp3"
+  ]
+ },
+ "code101-lesson-09": {
+  "intro": "code101-09-intro.mp3",
+  "outro": "code101-09-outro.mp3",
+  "questions": [
+   "code101-09-q1.mp3",
+   "code101-09-q2.mp3",
+   "code101-09-q3.mp3",
+   "code101-09-q4.mp3",
+   "code101-09-q5.mp3"
+  ]
+ },
+ "code101-lesson-10": {
+  "intro": "code101-10-intro.mp3",
+  "outro": "code101-10-outro.mp3",
+  "questions": [
+   "code101-10-q1.mp3",
+   "code101-10-q2.mp3",
+   "code101-10-q3.mp3",
+   "code101-10-q4.mp3",
+   "code101-10-q5.mp3"
+  ]
+ },
+ "code101-lesson-11": {
+  "intro": "code101-11-intro.mp3",
+  "outro": "code101-11-outro.mp3",
+  "questions": [
+   "code101-11-q1.mp3",
+   "code101-11-q2.mp3",
+   "code101-11-q3.mp3",
+   "code101-11-q4.mp3",
+   "code101-11-q5.mp3"
+  ]
+ },
+ "code101-lesson-12": {
+  "intro": "code101-12-intro.mp3",
+  "outro": "code101-12-outro.mp3",
+  "questions": [
+   "code101-12-q1.mp3",
+   "code101-12-q2.mp3",
+   "code101-12-q3.mp3",
+   "code101-12-q4.mp3",
+   "code101-12-q5.mp3"
+  ]
+ },
+ "cowork-lesson-01": {
+  "intro": "cowork-01-intro.mp3",
+  "outro": "cowork-01-outro.mp3",
+  "questions": [
+   "cowork-01-q1.mp3",
+   "cowork-01-q2.mp3",
+   "cowork-01-q3.mp3",
+   "cowork-01-q4.mp3",
+   "cowork-01-q5.mp3"
+  ]
+ },
+ "cowork-lesson-02": {
+  "intro": "cowork-02-intro.mp3",
+  "outro": "cowork-02-outro.mp3",
+  "questions": [
+   "cowork-02-q1.mp3",
+   "cowork-02-q2.mp3",
+   "cowork-02-q3.mp3",
+   "cowork-02-q4.mp3",
+   "cowork-02-q5.mp3"
+  ]
+ },
+ "cowork-lesson-03": {
+  "intro": "cowork-03-intro.mp3",
+  "outro": "cowork-03-outro.mp3",
+  "questions": [
+   "cowork-03-q1.mp3",
+   "cowork-03-q2.mp3",
+   "cowork-03-q3.mp3",
+   "cowork-03-q4.mp3",
+   "cowork-03-q5.mp3"
+  ]
+ },
+ "cowork-lesson-04": {
+  "intro": "cowork-04-intro.mp3",
+  "outro": "cowork-04-outro.mp3",
+  "questions": [
+   "cowork-04-q1.mp3",
+   "cowork-04-q2.mp3",
+   "cowork-04-q3.mp3",
+   "cowork-04-q4.mp3",
+   "cowork-04-q5.mp3"
+  ]
+ },
+ "cowork-lesson-05": {
+  "intro": "cowork-05-intro.mp3",
+  "outro": "cowork-05-outro.mp3",
+  "questions": [
+   "cowork-05-q1.mp3",
+   "cowork-05-q2.mp3",
+   "cowork-05-q3.mp3",
+   "cowork-05-q4.mp3",
+   "cowork-05-q5.mp3"
+  ]
+ },
+ "cowork-lesson-06": {
+  "intro": "cowork-06-intro.mp3",
+  "outro": "cowork-06-outro.mp3",
+  "questions": [
+   "cowork-06-q1.mp3",
+   "cowork-06-q2.mp3",
+   "cowork-06-q3.mp3",
+   "cowork-06-q4.mp3",
+   "cowork-06-q5.mp3"
+  ]
+ },
+ "cowork-lesson-07": {
+  "intro": "cowork-07-intro.mp3",
+  "outro": "cowork-07-outro.mp3",
+  "questions": [
+   "cowork-07-q1.mp3",
+   "cowork-07-q2.mp3",
+   "cowork-07-q3.mp3",
+   "cowork-07-q4.mp3",
+   "cowork-07-q5.mp3"
+  ]
+ },
+ "cowork-lesson-08": {
+  "intro": "cowork-08-intro.mp3",
+  "outro": "cowork-08-outro.mp3",
+  "questions": [
+   "cowork-08-q1.mp3",
+   "cowork-08-q2.mp3",
+   "cowork-08-q3.mp3",
+   "cowork-08-q4.mp3",
+   "cowork-08-q5.mp3"
+  ]
+ },
+ "cowork-lesson-09": {
+  "intro": "cowork-09-intro.mp3",
+  "outro": "cowork-09-outro.mp3",
+  "questions": [
+   "cowork-09-q1.mp3",
+   "cowork-09-q2.mp3",
+   "cowork-09-q3.mp3",
+   "cowork-09-q4.mp3",
+   "cowork-09-q5.mp3"
+  ]
+ },
+ "cowork-lesson-10": {
+  "intro": "cowork-10-intro.mp3",
+  "outro": "cowork-10-outro.mp3",
+  "questions": [
+   "cowork-10-q1.mp3",
+   "cowork-10-q2.mp3",
+   "cowork-10-q3.mp3",
+   "cowork-10-q4.mp3",
+   "cowork-10-q5.mp3"
+  ]
+ },
+ "start-lesson-01": {
+  "intro": "start-01-intro.mp3",
+  "outro": "start-01-outro.mp3",
+  "questions": [
+   "start-01-q1.mp3",
+   "start-01-q2.mp3",
+   "start-01-q3.mp3",
+   "start-01-q4.mp3",
+   "start-01-q5.mp3"
+  ]
+ },
+ "start-lesson-02": {
+  "intro": "start-02-intro.mp3",
+  "outro": "start-02-outro.mp3",
+  "questions": [
+   "start-02-q1.mp3",
+   "start-02-q2.mp3",
+   "start-02-q3.mp3",
+   "start-02-q4.mp3",
+   "start-02-q5.mp3"
+  ]
+ },
+ "start-lesson-03": {
+  "intro": "start-03-intro.mp3",
+  "outro": "start-03-outro.mp3",
+  "questions": [
+   "start-03-q1.mp3",
+   "start-03-q2.mp3",
+   "start-03-q3.mp3",
+   "start-03-q4.mp3",
+   "start-03-q5.mp3"
+  ]
+ }
+}
