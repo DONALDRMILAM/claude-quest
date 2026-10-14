@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Claude Quest — Learn Claude 101 as a Game</title>
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#131a33; --card:#1a2342; --card2:#222c52;
+    --accent:#7c5cff; --accent2:#00d4ff; --gold:#ffcf3f; --green:#2ee6a8;
+    --red:#ff5d7a; --text:#eef1ff; --dim:#9aa3c7;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 800px at 50% -10%, #1b2450 0%, var(--bg) 60%);
+    color:var(--text); min-height:100vh; padding:0 0 40px;}
+  .wrap{max-width:640px; margin:0 auto; padding:16px;}
+  .screen{display:none;}
+  .screen.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+  h1{font-size:2rem; margin:8px 0 4px; text-align:center;}
+  h2{font-size:1.35rem; margin:6px 0 10px;}
+  .sub{color:var(--dim); text-align:center; margin:0 0 14px;}
+  .card{background:linear-gradient(180deg,var(--card),var(--bg2)); border:1px solid #2c3766;
+    border-radius:18px; padding:18px; margin:12px 0; box-shadow:0 6px 24px rgba(0,0,0,.35);}
+  .btn{display:block; width:100%; padding:18px; margin:10px 0; font-size:1.12rem; font-weight:700;
+    color:var(--text); background:var(--card2); border:2px solid #35406f; border-radius:16px;
+    cursor:pointer; text-align:center; text-decoration:none; min-height:60px;}
+  .btn:active{transform:scale(.98);}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),#5a3df0); border-color:transparent;
+    box-shadow:0 6px 20px rgba(124,92,255,.45); font-size:1.2rem;}
+  .btn.gold{background:linear-gradient(135deg,#e0a92e,var(--gold)); color:#231a00; border-color:transparent;}
+  .btn.correct{background:linear-gradient(135deg,#1c9e6c,var(--green)); border-color:transparent; color:#04281b;}
+  .btn.wrong{background:linear-gradient(135deg,#c22747,var(--red)); border-color:transparent;}
+  .btn:disabled{opacity:.85;}
+  .hud{display:flex; justify-content:space-between; align-items:center; gap:8px; margin:8px 0;}
+  .pill{background:#101736; border:1px solid #2c3766; border-radius:999px; padding:8px 14px;
+    font-weight:700; font-size:.95rem; white-space:nowrap;}
+  .hearts{font-size:1.25rem; letter-spacing:2px;}
+  .bar{height:12px; background:#101736; border-radius:999px; overflow:hidden; margin:10px 0; border:1px solid #2c3766;}
+  .bar > div{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .3s;}
+  .why{background:#101736; border-left:4px solid var(--accent2); border-radius:0 12px 12px 0;
+    padding:12px 14px; margin:12px 0; color:var(--text); font-size:.98rem;}
+  .map{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0;}
+  .node{background:var(--card); border:2px solid #2c3766; border-radius:16px; padding:14px 6px;
+    text-align:center; font-size:.82rem; font-weight:700; cursor:pointer; min-height:86px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;}
+  .node .em{font-size:1.7rem;}
+  .node.locked{opacity:.38; cursor:not-allowed; filter:grayscale(1);}
+  .node.done{border-color:var(--green); box-shadow:0 0 12px rgba(46,230,168,.25);}
+  .node.current{border-color:var(--gold); box-shadow:0 0 14px rgba(255,207,63,.35);}
+  .worlds{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:14px 0;}
+  .world{background:linear-gradient(180deg,var(--card),var(--bg2)); border:2px solid #2c3766;
+    border-radius:18px; padding:16px 10px; text-align:center; cursor:pointer; min-height:150px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;}
+  .world:active{transform:scale(.98);}
+  .world .em{font-size:2.6rem;}
+  .world .wt{font-weight:800; font-size:1.02rem;}
+  .world .wl{font-size:.8rem; color:var(--dim);}
+  .world .wp{font-size:.78rem; color:var(--gold); font-weight:700;}
+  .world .wbar{width:80%; height:8px; background:#101736; border-radius:999px; overflow:hidden; border:1px solid #2c3766;}
+  .world .wbar > div{height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2));}
+  .path{background:#101736; border:1px dashed var(--gold); border-radius:14px; padding:12px 14px;
+    margin:12px 0; font-size:.92rem; line-height:1.7; color:var(--text);}
+  .path b{color:var(--gold);}
+  .badge-row{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:10px 0;}
+  .badge{background:#101736; border:1px solid var(--gold); color:var(--gold); border-radius:999px;
+    padding:6px 12px; font-size:.85rem; font-weight:700;}
+  .story{font-size:1.02rem; line-height:1.55;}
+  .crown{font-size:5rem; text-align:center; margin:10px 0; animation:bounce 1.6s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);}}
+  .center{text-align:center;}
+  .dim{color:var(--dim);}
+  .big{font-size:1.6rem; font-weight:800;}
+  a.lesson-link{color:var(--accent2); font-weight:700;}
+  .qnum{color:var(--dim); font-size:.9rem; margin-bottom:6px;}
+  .foot{text-align:center; color:var(--dim); font-size:.78rem; margin:26px 0 8px; line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HOME / WORLD SELECT -->
+  <div class="screen active" id="scr-home">
+    <h1>🤖 Claude Quest</h1>
+    <p class="sub">Anthropic's Claude 101 course, turned into a game.<br>13 worlds. 65 levels. 3 hearts per level.</p>
+    <div class="card">
+      <div class="hud">
+        <div class="pill">⚡ <span id="home-xp">0</span> XP</div>
+        <div class="pill">🏅 <span id="home-badges">0</span>/65 badges</div>
+      </div>
+      <div class="bar"><div id="home-bar"></div></div>
+    </div>
+    <div class="path" id="path-banner"></div>
+    <h2>🌍 Choose your world</h2>
+    <div class="worlds" id="worlds"></div>
+    <button class="btn" id="btn-pick-audio-3">📁 Find my audio files</button>
+    <button class="btn" id="btn-reset-all">↺ Reset ALL progress</button>
+    <div class="foot">Lessons adapted from Anthropic's free Claude 101 course.<br>Questions and narration generated from the official course texts.<br>Audio: extract a world's audio zip next to this file to enable 🔊 buttons.</div>
+  </div>
+
+  <!-- WORLD HOME -->
+  <div class="screen" id="scr-course">
+    <button class="btn" id="btn-course-back" style="margin-bottom:4px">← All worlds</button>
+    <h1 id="course-emoji">🌍</h1>
+    <h2 class="center" id="course-title" style="text-align:center"></h2>
+    <p class="sub" id="course-sub"></p>
+    <div class="card">
+      <div class="hud">
+        <div class="pill">⚡ <span id="course-xp">0</span> XP</div>
+        <div class="pill">🏅 <span id="course-badges">0</span>/<span id="course-total">0</span> badges</div>
+      </div>
+      <div class="bar"><div id="course-bar"></div></div>
+      <div class="badge-row" id="course-badge-row"></div>
+      <button class="btn" id="btn-pick-audio" style="margin-top:8px">📁 Find my audio files</button>
+    </div>
+    <h2>🗺️ Mission Map</h2>
+    <div class="map" id="cmap"></div>
+    <button class="btn primary" id="btn-continue">▶ Start / Continue</button>
+    <button class="btn" id="btn-reset-course">↺ Reset this world</button>
+  </div>
+
+  <!-- LEVEL INTRO -->
+  <div class="screen" id="scr-intro">
+    <div class="card">
+      <div class="qnum" id="intro-kicker">LEVEL 1</div>
+      <h2 id="intro-title"></h2>
+      <p class="story" id="intro-story"></p>
+      <p>📖 <a class="lesson-link" id="intro-link" href="https://academy.claude.com/courses/claude-101" target="_blank" rel="noopener">Read the lesson on Claude Academy</a></p>
+    </div>
+    <button class="btn" id="btn-listen-lesson">🔊 Listen to intro</button>
+    <div id="lesson-player-wrap" style="display:none; margin:10px 0;">
+      <audio id="lesson-player" controls preload="none" style="width:100%"></audio>
+      <p class="dim" id="lesson-audio-missing" style="display:none"></p>
+      <button class="btn" id="btn-pick-audio-2" style="margin-top:8px">📁 Find my audio files</button>
+    </div>
+    <button class="btn primary" id="btn-start-quiz">🎮 Start mission</button>
+    <button class="btn" id="btn-back-course">← Mission map</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="scr-quiz">
+    <div class="hud">
+      <div class="pill hearts" id="quiz-hearts">❤️❤️❤️</div>
+      <div class="pill">🔥 <span id="quiz-streak">0</span></div>
+      <div class="pill">⚡ <span id="quiz-xp">0</span></div>
+    </div>
+    <div class="bar"><div id="quiz-bar"></div></div>
+    <div class="card">
+      <div class="qnum" id="quiz-qnum"></div>
+      <h2 id="quiz-q"></h2>
+      <button class="btn" id="btn-listen-q">🔊 Listen to question</button>
+      <div id="quiz-player-wrap" style="display:none; margin:10px 0;">
+        <audio id="quiz-player" controls preload="none" style="width:100%"></audio>
+        <p class="dim" id="quiz-audio-missing" style="display:none"></p>
+      </div>
+      <div id="quiz-opts"></div>
+      <div class="why" id="quiz-why" style="display:none"></div>
+      <button class="btn primary" id="btn-next" style="display:none">Next →</button>
+    </div>
+  </div>
+
+  <!-- LEVEL COMPLETE -->
+  <div class="screen" id="scr-complete">
+    <div class="card center">
+      <div style="font-size:3.5rem" id="done-badge-em">🏅</div>
+      <h2 id="done-title">Level complete!</h2>
+      <p class="sub" id="done-sub"></p>
+      <div class="pill" style="display:inline-block">⚡ +<span id="done-xp">0</span> XP this level</div>
+      <p class="dim" id="done-streak"></p>
+    </div>
+    <div class="card">
+      <p class="story" id="done-outro"></p>
+      <button class="btn" id="btn-listen-outro">🔊 Listen to outro</button>
+      <div id="outro-player-wrap" style="display:none; margin:10px 0;">
+        <audio id="outro-player" controls preload="none" style="width:100%"></audio>
+        <p class="dim" id="outro-audio-missing" style="display:none"></p>
+      </div>
+    </div>
+    <button class="btn gold" id="btn-next-level">Next level →</button>
+    <button class="btn" id="btn-done-course">← Mission map</button>
+  </div>
+
+  <!-- FAILED -->
+  <div class="screen" id="scr-fail">
+    <div class="card center">
+      <div style="font-size:3.5rem">💔</div>
+      <h2>Out of hearts!</h2>
+      <p class="sub">Every hero fails sometimes. Review the lesson and retry the mission.</p>
+    </div>
+    <button class="btn primary" id="btn-retry">↻ Retry level</button>
+    <button class="btn" id="btn-fail-course">← Mission map</button>
+  </div>
+
+  <!-- COURSE CROWN -->
+  <div class="screen" id="scr-crown">
+    <div class="crown">👑</div>
+    <h1 class="center" id="crown-title">Champion!</h1>
+    <p class="sub" id="crown-sub"></p>
+    <div class="card center">
+      <div class="big">⚡ <span id="crown-xp">0</span> XP</div>
+      <p class="dim" id="crown-count"></p>
+      <div class="badge-row" id="crown-badges"></div>
+    </div>
+    <button class="btn gold" id="btn-crown-course">← Back to mission map</button>
+    <button class="btn" id="btn-crown-home">🌍 All worlds</button>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+/* ===== game data (generated from questions.json + narration.json) ===== */
+const PACKS = {"lesson-01":{"id":"lesson-01","title":"What is Claude?","badge":"💬","color":"#7c3aed","outro":"Nicely done! You now know what Claude is and what it can do. Next up: your very first conversation — let's learn how to say hello like a pro.","outroAudio":"lesson-01-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"💬 Chatter","story":"Welcome to Claude Quest! In this first lesson, you'll meet Claude — a thinking partner trained to be helpful, harmless, and honest. Let's see what makes it tick!","audio":"lesson-01-intro.mp3","audioQ":"lesson-01-q1.mp3","questions":[{"q":"Which framework guides Claude to be helpful, harmless, and honest?","opts":["Reinforcement Learning","Constitutional AI","Supervised Fine-Tuning","Chain of Thought"],"a":1,"why":"Claude is trained with Constitutional AI to be helpful, harmless, and honest."}]},{"n":2,"title":"Level 2","badge":"🤖 Buddy","story":"Welcome to Claude Quest! In this first lesson, you'll meet Claude — a thinking partner trained to be helpful, harmless, and honest. Let's see what makes it tick!","audio":"lesson-01-intro.mp3","audioQ":"lesson-01-q2.mp3","questions":[{"q":"Claude's context window of 200K+ tokens equals roughly how much text?","opts":["50 pages","10 pages","About 500 pages","2,000 pages"],"a":2,"why":"Claude's 200K+ token context window can ingest about 500 pages of text in one conversation."}]},{"n":3,"title":"Level 3","badge":"🧠 Thinker","story":"Welcome to Claude Quest! In this first lesson, you'll meet Claude — a thinking partner trained to be helpful, harmless, and honest. Let's see what makes it tick!","audio":"lesson-01-intro.mp3","audioQ":"lesson-01-q3.mp3","questions":[{"q":"Which Claude model does the course call the best coding model?","opts":["Claude Haiku 3.5","Claude Sonnet 4","Claude Instant 1.2","Claude Opus 4.5"],"a":3,"why":"The course describes Claude Opus 4.5 as the best coding model."}]},{"n":4,"title":"Level 4","badge":"✨ Sparker","story":"Welcome to Claude Quest! In this first lesson, you'll meet Claude — a thinking partner trained to be helpful, harmless, and honest. Let's see what makes it tick!","audio":"lesson-01-intro.mp3","audioQ":"lesson-01-q4.mp3","questions":[{"q":"What does Learning Mode do differently?","opts":["Guides your reasoning process","Gives faster answers","Disables citations","Removes all limits"],"a":0,"why":"Learning mode guides your reasoning process rather than just giving answers."}]},{"n":5,"title":"Level 5","badge":"🌟 Star","story":"Welcome to Claude Quest! In this first lesson, you'll meet Claude — a thinking partner trained to be helpful, harmless, and honest. Let's see what makes it tick!","audio":"lesson-01-intro.mp3","audioQ":"lesson-01-q5.mp3","questions":[{"q":"Which is the primary way to access Claude?","opts":["Only through Slack","Claude.ai on web, desktop, and mobile","Only through Excel","A phone hotline"],"a":1,"why":"Claude.ai (web, desktop, mobile) is the primary interface for Claude."}]}]},"lesson-02":{"id":"lesson-02","title":"Your First Conversation","badge":"👋","color":"#0ea5e9","outro":"You did it! You know how to set the stage, define tasks, and specify rules. Next, we'll go from good results to great results with iteration tricks.","outroAudio":"lesson-02-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"👋 Greeter","story":"Welcome to lesson two! Talking to Claude is like talking to a coworker — natural and conversational. We'll master the 3-part prompt framework and the 4D framework for AI fluency.","audio":"lesson-02-intro.mp3","audioQ":"lesson-02-q1.mp3","questions":[{"q":"What are the three parts of the course's prompt framework?","opts":["Asking nicely, saying please, saying thanks","Setting the stage, defining the task, specifying rules","Uploading files, enabling search, saving chats","Role, example, deadline, budget"],"a":1,"why":"The framework is: (1) setting the stage, (2) defining the task, (3) specifying rules."}]},{"n":2,"title":"Level 2","badge":"💭 Wonderer","story":"Welcome to lesson two! Talking to Claude is like talking to a coworker — natural and conversational. We'll master the 3-part prompt framework and the 4D framework for AI fluency.","audio":"lesson-02-intro.mp3","audioQ":"lesson-02-q2.mp3","questions":[{"q":"In the 4D Framework, what does Discernment mean?","opts":["Deciding what the AI does","Communicating clearly","Critically evaluating outputs","Using AI ethically"],"a":2,"why":"Discernment is critically evaluating AI outputs; Delegation, Description, and Diligence cover the other meanings."}]},{"n":3,"title":"Level 3","badge":"🗣️ Talker","story":"Welcome to lesson two! Talking to Claude is like talking to a coworker — natural and conversational. We'll master the 3-part prompt framework and the 4D framework for AI fluency.","audio":"lesson-02-intro.mp3","audioQ":"lesson-02-q3.mp3","questions":[{"q":"Which file formats can you upload to Claude for context?","opts":["MP3, MP4, AVI","EXE, MSI, DMG","ZIP, RAR, TAR","PDF, DOCX, CSV, TXT, PNG, JPEG"],"a":3,"why":"Supported uploads include PDF, DOCX, CSV, TXT, PNG, and JPEG."}]},{"n":4,"title":"Level 4","badge":"💡 Bright","story":"Welcome to lesson two! Talking to Claude is like talking to a coworker — natural and conversational. We'll master the 3-part prompt framework and the 4D framework for AI fluency.","audio":"lesson-02-intro.mp3","audioQ":"lesson-02-q4.mp3","questions":[{"q":"What is the real power behind Claude conversations?","opts":["One perfect prompt","Continued, frequent interaction","Global preferences only","Deleting old chats"],"a":1,"why":"Real power comes from continued, frequent interaction — conversations are iterative."}]},{"n":5,"title":"Level 5","badge":"🎉 Pro","story":"Welcome to lesson two! Talking to Claude is like talking to a coworker — natural and conversational. We'll master the 3-part prompt framework and the 4D framework for AI fluency.","audio":"lesson-02-intro.mp3","audioQ":"lesson-02-q5.mp3","questions":[{"q":"Why should you name uploaded files descriptively?","opts":["It looks more professional","It saves storage space","Claude uses filenames to retrieve info","It speeds up the app"],"a":2,"why":"Descriptive filenames help because Claude uses filenames to retrieve information."}]}]},"lesson-03":{"id":"lesson-03","title":"Getting Better Results","badge":"🎯","color":"#f59e0b","outro":"Awesome work! You're officially an AI fluency pro. Next, we'll explore the three modes of the Claude Desktop App: Chat, Cowork, and Code.","outroAudio":"lesson-03-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🎯 Aimer","story":"Welcome to lesson three! First prompts rarely give perfect results, and that's totally normal. Let's learn how to fix common problems and get better outputs every time.","audio":"lesson-03-intro.mp3","audioQ":"lesson-03-q1.mp3","questions":[{"q":"If Claude's output is too generic, what should you add?","opts":["More emojis","A longer chat history","All caps","Context: audience, role, constraints"],"a":3,"why":"For too-generic output, add context such as audience, role, and constraints."}]},{"n":2,"title":"Level 2","badge":"🧭 Guide","story":"Welcome to lesson three! First prompts rarely give perfect results, and that's totally normal. Let's learn how to fix common problems and get better outputs every time.","audio":"lesson-03-intro.mp3","audioQ":"lesson-03-q2.mp3","questions":[{"q":"Which is the better feedback example?","opts":["\"Cut the first two paragraphs and sharpen the conclusion\"","\"Make it better\"","\"Fix it\"","\"Make it shorter\""],"a":0,"why":"Specific feedback beats vague — the detailed rewrite request gives Claude something actionable."}]},{"n":3,"title":"Level 3","badge":"🔍 Seeker","story":"Welcome to lesson three! First prompts rarely give perfect results, and that's totally normal. Let's learn how to fix common problems and get better outputs every time.","audio":"lesson-03-intro.mp3","audioQ":"lesson-03-q3.mp3","questions":[{"q":"If Claude's answer is wrong but confident, what should you do?","opts":["Accept it as fact","Restart the app","Verify independently and ask for citations","Type slower"],"a":2,"why":"For confident-but-wrong answers, verify independently, ask for citations, and enable web search."}]},{"n":4,"title":"Level 4","badge":"✍️ Writer","story":"Welcome to lesson three! First prompts rarely give perfect results, and that's totally normal. Let's learn how to fix common problems and get better outputs every time.","audio":"lesson-03-intro.mp3","audioQ":"lesson-03-q4.mp3","questions":[{"q":"What is a lightweight eval, according to the course?","opts":["Grading Claude's grammar","Test 5–10 real examples of a task; compare the outputs","Counting how fast it responds","Deleting bad chats"],"a":1,"why":"Evals collect 5–10 real examples of a recurring task, compare Claude's results, and refine prompts."}]},{"n":5,"title":"Level 5","badge":"🏆 Ace","story":"Welcome to lesson three! First prompts rarely give perfect results, and that's totally normal. Let's learn how to fix common problems and get better outputs every time.","audio":"lesson-03-intro.mp3","audioQ":"lesson-03-q5.mp3","questions":[{"q":"When should you start a fresh chat instead of redirecting?","opts":["Never — always keep one chat","Sometimes a new chat is faster than redirecting","Only on Tuesdays","When the app crashes"],"a":1,"why":"Know when to start fresh — sometimes a new chat is faster than redirecting the conversation."}]}]},"lesson-04":{"id":"lesson-04","title":"Chat, Cowork, Code","badge":"🖥️","color":"#10b981","outro":"Great job! You can now pick the right mode for any job. Next up: Projects — Claude's self-contained workspaces with their own memory and knowledge bases.","outroAudio":"lesson-04-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🖥️ Clicker","story":"Welcome to lesson four! The desktop app has three modes — Chat for quick questions, Cowork for deep sustained work, and Code for building software. Let's sort them out!","audio":"lesson-04-intro.mp3","audioQ":"lesson-04-q1.mp3","questions":[{"q":"Which three modes does the Claude Desktop App offer?","opts":["Chat, Cowork, Code","Write, Draw, Play","Search, Shop, Send","Ask, Tell, Show"],"a":0,"why":"The desktop app offers three modes: Chat, Cowork, and Code."}]},{"n":2,"title":"Level 2","badge":"⌨️ Typer","story":"Welcome to lesson four! The desktop app has three modes — Chat for quick questions, Cowork for deep sustained work, and Code for building software. Let's sort them out!","audio":"lesson-04-intro.mp3","audioQ":"lesson-04-q2.mp3","questions":[{"q":"What powers Cowork and Code modes under the hood?","opts":["A web browser","A spreadsheet engine","A video player","Claude Code"],"a":3,"why":"Cowork and Code both run on Claude Code under the hood, enabling sub-agents and long tasks."}]},{"n":3,"title":"Level 3","badge":"💻 Builder","story":"Welcome to lesson four! The desktop app has three modes — Chat for quick questions, Cowork for deep sustained work, and Code for building software. Let's sort them out!","audio":"lesson-04-intro.mp3","audioQ":"lesson-04-q3.mp3","questions":[{"q":"What is Quick Entry in Chat mode?","opts":["A keyboard shortcut for screenshots","Voice dictation mode","Double-tap Option on Mac to overlay Claude over any app","Auto-save of chats"],"a":2,"why":"Quick entry lets you double-tap the Option key on Mac to overlay Claude over any app."}]},{"n":4,"title":"Level 4","badge":"🧑‍💻 Coder","story":"Welcome to lesson four! The desktop app has three modes — Chat for quick questions, Cowork for deep sustained work, and Code for building software. Let's sort them out!","audio":"lesson-04-intro.mp3","audioQ":"lesson-04-q4.mp3","questions":[{"q":"Which Code mode approves every change before applying it?","opts":["Code mode","Ask mode","Plan mode","Auto mode"],"a":1,"why":"Ask mode approves every change; Code auto-applies; Plan reviews the approach first."}]},{"n":5,"title":"Level 5","badge":"⚡ Zip","story":"Welcome to lesson four! The desktop app has three modes — Chat for quick questions, Cowork for deep sustained work, and Code for building software. Let's sort them out!","audio":"lesson-04-intro.mp3","audioQ":"lesson-04-q5.mp3","questions":[{"q":"When should you use Cowork mode?","opts":["Quick single questions","Only for writing emails","Playing games","Research, document production, recurring automated tasks"],"a":3,"why":"Cowork is for complex sustained work like research briefs, document production, and recurring tasks."}]}]},"lesson-05":{"id":"lesson-05","title":"Projects","badge":"📁","color":"#ec4899","outro":"Fantastic! You're a project planner now. Next, let's make something visual and interactive: Artifacts.","outroAudio":"lesson-05-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"📁 Filer","story":"Welcome to lesson five! Projects are where Claude really shines on ongoing work. You'll learn how they store knowledge, share permissions, and even expand capacity with RAG.","audio":"lesson-05-intro.mp3","audioQ":"lesson-05-q1.mp3","questions":[{"q":"What is a Project in Claude?","opts":["A single chat message","A billing plan","A workspace with its own memory and knowledge base","A font style"],"a":2,"why":"Projects are self-contained workspaces with their own memory, chat histories, and knowledge bases."}]},{"n":2,"title":"Level 2","badge":"🗂️ Sorter","story":"Welcome to lesson five! Projects are where Claude really shines on ongoing work. You'll learn how they store knowledge, share permissions, and even expand capacity with RAG.","audio":"lesson-05-intro.mp3","audioQ":"lesson-05-q2.mp3","questions":[{"q":"What is RAG mode in Projects?","opts":["A video game mode","Auto retrieval that expands knowledge capacity 10x","A red color theme","Random Answer Generator"],"a":1,"why":"When a knowledge base nears context limits, Claude auto-enables Retrieval Augmented Generation, expanding capacity up to 10x."}]},{"n":3,"title":"Level 3","badge":"📂 Keeper","story":"Welcome to lesson five! Projects are where Claude really shines on ongoing work. You'll learn how they store knowledge, share permissions, and even expand capacity with RAG.","audio":"lesson-05-intro.mp3","audioQ":"lesson-05-q3.mp3","questions":[{"q":"Which three permission levels exist for shared Projects?","opts":["Admin, Mod, Guest","Read, Write, Delete","Free, Pro, Max","Can view, Can edit, Owner"],"a":3,"why":"Team/Enterprise shared projects offer Can view, Can edit, and Owner permissions."}]},{"n":4,"title":"Level 4","badge":"🗃️ Stacker","story":"Welcome to lesson five! Projects are where Claude really shines on ongoing work. You'll learn how they store knowledge, share permissions, and even expand capacity with RAG.","audio":"lesson-05-intro.mp3","audioQ":"lesson-05-q4.mp3","questions":[{"q":"What is the first step in creating a project?","opts":["Build the knowledge base","Add instructions","Share with the team","Set up: name, description, visibility"],"a":3,"why":"Step 1 is Set up — name, description, and private vs org-wide visibility."}]},{"n":5,"title":"Level 5","badge":"🏗️ Maker","story":"Welcome to lesson five! Projects are where Claude really shines on ongoing work. You'll learn how they store knowledge, share permissions, and even expand capacity with RAG.","audio":"lesson-05-intro.mp3","audioQ":"lesson-05-q5.mp3","questions":[{"q":"Which filename is best for a knowledge base?","opts":["document1.pdf","Q4-2024-Brand-Guidelines.pdf","untitled.pdf","file.pdf"],"a":1,"why":"Descriptive names like \"Q4-2024-Brand-Guidelines.pdf\" help Claude retrieve the right documents."}]}]},"lesson-06":{"id":"lesson-06","title":"Artifacts","badge":"🎨","color":"#f43f5e","outro":"Beautiful! You know exactly when and how artifacts appear. Next, we'll add superpowers to Claude with Skills.","outroAudio":"lesson-06-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🎨 Dabber","story":"Welcome to lesson six! Artifacts are Claude's standalone creations — documents, code, HTML pages, diagrams, and interactive apps. Time to build something worth keeping!","audio":"lesson-06-intro.mp3","audioQ":"lesson-06-q1.mp3","questions":[{"q":"When does Claude auto-create an Artifact?","opts":["When content is self-contained, complex, or reusable","For every message","Only on weekends","When asked to draw"],"a":0,"why":"Claude auto-creates an artifact when content is self-contained (>15 lines), editable, complex, or worth referencing later."}]},{"n":2,"title":"Level 2","badge":"🖼️ Framer","story":"Welcome to lesson six! Artifacts are Claude's standalone creations — documents, code, HTML pages, diagrams, and interactive apps. Time to build something worth keeping!","audio":"lesson-06-intro.mp3","audioQ":"lesson-06-q2.mp3","questions":[{"q":"Which Artifact type would you use for an interactive calculator?","opts":["SVG image","Document","Mermaid diagram","React component"],"a":3,"why":"React components are interactive UIs with real functionality — calculators, dashboards, games."}]},{"n":3,"title":"Level 3","badge":"📐 Ruler","story":"Welcome to lesson six! Artifacts are Claude's standalone creations — documents, code, HTML pages, diagrams, and interactive apps. Time to build something worth keeping!","audio":"lesson-06-intro.mp3","audioQ":"lesson-06-q3.mp3","questions":[{"q":"Which Artifact type is best for a flowchart?","opts":["Code snippet","HTML page","SVG image","Mermaid diagram"],"a":3,"why":"Mermaid diagrams are for flowcharts and org charts; SVG images are for logos and icons."}]},{"n":4,"title":"Level 4","badge":"🧩 Solver","story":"Welcome to lesson six! Artifacts are Claude's standalone creations — documents, code, HTML pages, diagrams, and interactive apps. Time to build something worth keeping!","audio":"lesson-06-intro.mp3","audioQ":"lesson-06-q4.mp3","questions":[{"q":"What does \"publish publicly\" let others do with your Artifact?","opts":["Delete it","Edit your original","View, interact, and remix it into their own Claude chat","Charge for it"],"a":2,"why":"Published artifacts can be viewed/interacted with by anyone with the link, and others can \"remix\" them."}]},{"n":5,"title":"Level 5","badge":"💎 Gem","story":"Welcome to lesson six! Artifacts are Claude's standalone creations — documents, code, HTML pages, diagrams, and interactive apps. Time to build something worth keeping!","audio":"lesson-06-intro.mp3","audioQ":"lesson-06-q5.mp3","questions":[{"q":"Claude didn't auto-create an Artifact. What should you say?","opts":["\"Never mind\"","\"Please create that as an artifact\"","\"Delete it\"","\"Start over\""],"a":1,"why":"If no auto-artifact appears, say \"Please create that as an artifact.\""}]}]},"lesson-07":{"id":"lesson-07","title":"Skills","badge":"🛠️","color":"#84cc16","outro":"Sweet! You can now enable skills and even create your own. Next: connecting your actual tools — Google Drive, Slack, Gmail, and more.","outroAudio":"lesson-07-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🛠️ Fixer","story":"Welcome to lesson seven! Skills are Claude's repeatable workflows — folders of instructions that teach it to do specialized tasks. Let's learn the difference between the HOW and the WHAT.","audio":"lesson-07-intro.mp3","audioQ":"lesson-07-q1.mp3","questions":[{"q":"What is a Skill?","opts":["Instructions Claude loads for specialized tasks","A user achievement badge","A chat theme","A billing tier"],"a":0,"why":"Skills are folders of instructions, scripts, and resources Claude loads dynamically for specialized tasks."}]},{"n":2,"title":"Level 2","badge":"🔧 Turner","story":"Welcome to lesson seven! Skills are Claude's repeatable workflows — folders of instructions that teach it to do specialized tasks. Let's learn the difference between the HOW and the WHAT.","audio":"lesson-07-intro.mp3","audioQ":"lesson-07-q2.mp3","questions":[{"q":"How do Skills differ from Projects?","opts":["Projects define processes; Skills store knowledge","There is no difference","Skills define processes; Projects store knowledge","Skills are only for Enterprise"],"a":2,"why":"Skills define processes Claude executes (HOW to do it); Projects store knowledge Claude references (WHAT to know)."}]},{"n":3,"title":"Level 3","badge":"⚙️ Spinner","story":"Welcome to lesson seven! Skills are Claude's repeatable workflows — folders of instructions that teach it to do specialized tasks. Let's learn the difference between the HOW and the WHAT.","audio":"lesson-07-intro.mp3","audioQ":"lesson-07-q3.mp3","questions":[{"q":"Which two types of Skills exist?","opts":["Free and Paid","Public and Private","Anthropic Skills and Custom Skills","Fast and Slow"],"a":2,"why":"Anthropic Skills are built-in and auto-invoked for all paid users; Custom Skills are created by you or your org."}]},{"n":4,"title":"Level 4","badge":"🧰 Packer","story":"Welcome to lesson seven! Skills are Claude's repeatable workflows — folders of instructions that teach it to do specialized tasks. Let's learn the difference between the HOW and the WHAT.","audio":"lesson-07-intro.mp3","audioQ":"lesson-07-q4.mp3","questions":[{"q":"How do you enable Skills?","opts":["Shake your phone","Email support","Restart the app three times","Settings > Capabilities > enable code execution"],"a":3,"why":"Enable Skills via Settings > Capabilities > \"Code execution and file creation\" on, then toggle Skills."}]},{"n":5,"title":"Level 5","badge":"✨ Shine","story":"Welcome to lesson seven! Skills are Claude's repeatable workflows — folders of instructions that teach it to do specialized tasks. Let's learn the difference between the HOW and the WHAT.","audio":"lesson-07-intro.mp3","audioQ":"lesson-07-q5.mp3","questions":[{"q":"Which step comes AFTER answering Claude's interview questions when creating a custom skill?","opts":["Pay a fee","Delete the skill","Log out","Upload reference materials"],"a":3,"why":"The flow is: tell Claude what you want, answer interview questions, upload reference materials, download the ZIP, upload in Settings."}]}]},"lesson-08":{"id":"lesson-08","title":"Connecting Your Tools","badge":"🔌","color":"#06b6d4","outro":"You connected the dots! Your tools are now Claude's tools. Next: Enterprise Search — the company-wide answer machine.","outroAudio":"lesson-08-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🔌 Plugger","story":"Welcome to lesson eight! Connectors turn Claude into a true collaborator with access to your real data. We'll explore MCP — the USB-C for AI — and how to plug everything in.","audio":"lesson-08-intro.mp3","audioQ":"lesson-08-q1.mp3","questions":[{"q":"What does MCP stand for?","opts":["Multi-Cloud Platform","Model Context Protocol","Managed Chat Program","Memory Control Panel"],"a":1,"why":"Connectors are powered by MCP (Model Context Protocol), described as \"USB-C for AI.\""}]},{"n":2,"title":"Level 2","badge":"🔗 Linker","story":"Welcome to lesson eight! Connectors turn Claude into a true collaborator with access to your real data. We'll explore MCP — the USB-C for AI — and how to plug everything in.","audio":"lesson-08-intro.mp3","audioQ":"lesson-08-q2.mp3","questions":[{"q":"Which of these is a Web connector?","opts":["File system","Browser automation","Figma desktop plugin","Google Drive"],"a":3,"why":"Web connectors are cloud services like Google Drive, Notion, Slack, Asana, Gmail, Stripe, and Salesforce."}]},{"n":3,"title":"Level 3","badge":"🧲 Magnet","story":"Welcome to lesson eight! Connectors turn Claude into a true collaborator with access to your real data. We'll explore MCP — the USB-C for AI — and how to plug everything in.","audio":"lesson-08-intro.mp3","audioQ":"lesson-08-q3.mp3","questions":[{"q":"What data can Claude see through a connector?","opts":["Only data you have permission to access","Everything on the internet","Other users' private files","Deleted files"],"a":0,"why":"Claude only sees data you have permission to access."}]},{"n":4,"title":"Level 4","badge":"🤝 Joiner","story":"Welcome to lesson eight! Connectors turn Claude into a true collaborator with access to your real data. We'll explore MCP — the USB-C for AI — and how to plug everything in.","audio":"lesson-08-intro.mp3","audioQ":"lesson-08-q4.mp3","questions":[{"q":"Where do you add connectors on the web?","opts":["A phone call","The App Store","Email support","claude.ai/directory"],"a":3,"why":"Setup starts at claude.ai/directory or \"Search and tools\" > \"Add connectors.\""}]},{"n":5,"title":"Level 5","badge":"🌐 Netter","story":"Welcome to lesson eight! Connectors turn Claude into a true collaborator with access to your real data. We'll explore MCP — the USB-C for AI — and how to plug everything in.","audio":"lesson-08-intro.mp3","audioQ":"lesson-08-q5.mp3","questions":[{"q":"After granting permissions to a connector, what should you do to test it?","opts":["Wait 24 hours","Restart your computer","Pay an invoice","Ask \"Can you access my [tool]?\""],"a":3,"why":"Test the connector by asking \"Can you access my [tool]?\""}]}]},"lesson-09":{"id":"lesson-09","title":"Enterprise Search","badge":"🔍","color":"#6366f1","outro":"Great research! You know how Enterprise Search works from admin setup to everyday questions. Next: Research Mode — Claude the deep-dive investigator.","outroAudio":"lesson-09-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🔍 Spotter","story":"Welcome to lesson nine! Enterprise Search lets you ask your whole organization a question at once. We'll see how it searches every tool simultaneously and cites its answers.","audio":"lesson-09-intro.mp3","audioQ":"lesson-09-q1.mp3","questions":[{"q":"What does the Enterprise Search sidebar option look like?","opts":["\"Ask {Your Org Name}\"","\"Google it\"","\"Bing search\"","\"Ask the internet\""],"a":0,"why":"Enterprise Search adds a dedicated \"Ask {Your Org Name}\" option in the sidebar."}]},{"n":2,"title":"Level 2","badge":"📚 Reader","story":"Welcome to lesson nine! Enterprise Search lets you ask your whole organization a question at once. We'll see how it searches every tool simultaneously and cites its answers.","audio":"lesson-09-intro.mp3","audioQ":"lesson-09-q2.mp3","questions":[{"q":"Which tools does Enterprise Search search simultaneously?","opts":["TikTok, Instagram, X","Netflix, Hulu, Disney+","Excel only","SharePoint, Slack, Gmail, Google Drive"],"a":3,"why":"It searches SharePoint, Slack, Gmail, and Google Drive simultaneously and synthesizes results with citations."}]},{"n":3,"title":"Level 3","badge":"🗄️ Archiver","story":"Welcome to lesson nine! Enterprise Search lets you ask your whole organization a question at once. We'll see how it searches every tool simultaneously and cites its answers.","audio":"lesson-09-intro.mp3","audioQ":"lesson-09-q3.mp3","questions":[{"q":"For the two-step setup, who configures Enterprise Search first?","opts":["Any random employee","The admin","Anthropic support","The internet provider"],"a":1,"why":"Setup is two-step: the admin configures first, then users authenticate."}]},{"n":4,"title":"Level 4","badge":"🧾 Checker","story":"Welcome to lesson nine! Enterprise Search lets you ask your whole organization a question at once. We'll see how it searches every tool simultaneously and cites its answers.","audio":"lesson-09-intro.mp3","audioQ":"lesson-09-q4.mp3","questions":[{"q":"Which two data sources are BOTH required in the admin setup?","opts":["Documents (Drive or SharePoint) + Chat (Slack or Teams)","Email and Calendar","Photos and Music","Bank and Taxes"],"a":0,"why":"The admin must connect Documents (Drive or SharePoint) plus Chat (Slack or Teams) — both required, email optional."}]},{"n":5,"title":"Level 5","badge":"🎯 Finder","story":"Welcome to lesson nine! Enterprise Search lets you ask your whole organization a question at once. We'll see how it searches every tool simultaneously and cites its answers.","audio":"lesson-09-intro.mp3","audioQ":"lesson-09-q5.mp3","questions":[{"q":"What is Enterprise Search best for?","opts":["General chit-chat","Writing poems","Information gathering across company tools","Playing chess"],"a":2,"why":"It's designed for information gathering across company tools — not general conversation."}]}]},"lesson-10":{"id":"lesson-10","title":"Research Mode","badge":"📊","color":"#14b8a6","outro":"Investigator status achieved! You know exactly when Research Mode earns its keep. Next: real-world use cases, role by role.","outroAudio":"lesson-10-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"📊 Plotter","story":"Welcome to lesson ten! Research Mode turns Claude into a systematic, multi-step investigator. Let's learn when to use it, how to enable it, and what makes a great research prompt.","audio":"lesson-10-intro.mp3","audioQ":"lesson-10-q1.mp3","questions":[{"q":"How long do most Research Mode reports take?","opts":["5–15 minutes","5–15 seconds","2–3 days","Exactly 1 hour"],"a":0,"why":"Most reports complete in 5–15 minutes; complex ones up to 45 minutes."}]},{"n":2,"title":"Level 2","badge":"🔬 Zoomer","story":"Welcome to lesson ten! Research Mode turns Claude into a systematic, multi-step investigator. Let's learn when to use it, how to enable it, and what makes a great research prompt.","audio":"lesson-10-intro.mp3","audioQ":"lesson-10-q2.mp3","questions":[{"q":"How do you enable Research Mode?","opts":["Shake your phone","Type \"RESEARCH\" in caps","Click the Research button (bottom left); it turns blue","Call support"],"a":2,"why":"Click the Research button at the bottom left of chat — it turns blue when active."}]},{"n":3,"title":"Level 3","badge":"📈 Climber","story":"Welcome to lesson ten! Research Mode turns Claude into a systematic, multi-step investigator. Let's learn when to use it, how to enable it, and what makes a great research prompt.","audio":"lesson-10-intro.mp3","audioQ":"lesson-10-q3.mp3","questions":[{"q":"What must be enabled FIRST before Research Mode works?","opts":["Dark mode","A webcam","Web search in Search and tools settings","Notifications"],"a":2,"why":"Web search must be enabled first in Search and tools settings."}]},{"n":4,"title":"Level 4","badge":"🧪 Mixer","story":"Welcome to lesson ten! Research Mode turns Claude into a systematic, multi-step investigator. Let's learn when to use it, how to enable it, and what makes a great research prompt.","audio":"lesson-10-intro.mp3","audioQ":"lesson-10-q4.mp3","questions":[{"q":"When should you use plain web search instead of Research Mode?","opts":["For quick single-source facts","For comparative analysis","For multi-source investigations","For comprehensive reports"],"a":0,"why":"Use web search for quick single-source facts; Research Mode for comprehensive, multi-source investigations."}]},{"n":5,"title":"Level 5","badge":"🏅 Medal","story":"Welcome to lesson ten! Research Mode turns Claude into a systematic, multi-step investigator. Let's learn when to use it, how to enable it, and what makes a great research prompt.","audio":"lesson-10-intro.mp3","audioQ":"lesson-10-q5.mp3","questions":[{"q":"What auto-enables when you turn on Research Mode?","opts":["Learning mode","Dictation","Extended thinking","Cowork mode"],"a":2,"why":"Extended thinking auto-enables with Research Mode."}]}]},"lesson-11":{"id":"lesson-11","title":"Use Cases by Role","badge":"💼","color":"#eab308","outro":"Excellent! You can now spot the perfect Claude use case for any team. Next: where to go from here — free courses, galleries, and your first week's plan.","outroAudio":"lesson-11-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"💼 Carrier","story":"Welcome to lesson eleven! This lesson is all about inspiration — step-by-step guides for sales, marketing, finance, HR, legal, and research. Let's match Claude to each role!","audio":"lesson-11-intro.mp3","audioQ":"lesson-11-q1.mp3","questions":[{"q":"Where do you find step-by-step guides per role?","opts":["A phone book","The Use Case Gallery at claude.com","The App Store","A newspaper"],"a":1,"why":"The Use Case Gallery (claude.com) has step-by-step guides per role."}]},{"n":2,"title":"Level 2","badge":"👔 Suit","story":"Welcome to lesson eleven! This lesson is all about inspiration — step-by-step guides for sales, marketing, finance, HR, legal, and research. Let's match Claude to each role!","audio":"lesson-11-intro.mp3","audioQ":"lesson-11-q2.mp3","questions":[{"q":"Which is a Sales use case from the course?","opts":["A battle card library for competitive intelligence","Building financial models","New hire onboarding guides","Tracking discovery timelines"],"a":0,"why":"Sales use cases include the battle card library (competitive intelligence), deal prep, and sales reports."}]},{"n":3,"title":"Level 3","badge":"🤝 Shaker","story":"Welcome to lesson eleven! This lesson is all about inspiration — step-by-step guides for sales, marketing, finance, HR, legal, and research. Let's match Claude to each role!","audio":"lesson-11-intro.mp3","audioQ":"lesson-11-q3.mp3","questions":[{"q":"Which is a Marketing use case from the course?","opts":["Build financial models","Track discovery timelines","Verify statistics from raw data","Analyze campaign performance"],"a":3,"why":"Marketing use cases include analyzing campaign performance and adapting content across platforms."}]},{"n":4,"title":"Level 4","badge":"💡 Lighter","story":"Welcome to lesson eleven! This lesson is all about inspiration — step-by-step guides for sales, marketing, finance, HR, legal, and research. Let's match Claude to each role!","audio":"lesson-11-intro.mp3","audioQ":"lesson-11-q4.mp3","questions":[{"q":"Which is a Finance use case from the course?","opts":["New hire onboarding guides","Draft investment memos","Summarize meeting threads","Track discovery timelines"],"a":1,"why":"Finance use cases include building financial models, drafting investment memos, and understanding inherited spreadsheets."}]},{"n":5,"title":"Level 5","badge":"🚀 Flyer","story":"Welcome to lesson eleven! This lesson is all about inspiration — step-by-step guides for sales, marketing, finance, HR, legal, and research. Let's match Claude to each role!","audio":"lesson-11-intro.mp3","audioQ":"lesson-11-q5.mp3","questions":[{"q":"Which is a Legal use case from the course?","opts":["Writing poetry","Building financial models","Tracking discovery timelines","Adapting content across platforms"],"a":2,"why":"Legal use cases include tracking discovery timelines and analyzing patterns."}]}]},"lesson-12":{"id":"lesson-12","title":"What's Next?","badge":"🚀","color":"#a855f7","outro":"Well done, quester! You know Claude is a collaborator, not a replacement. For the finale, let's tour the other ways to work with Claude.","outroAudio":"lesson-12-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🚀 Blaster","story":"Welcome to lesson twelve! Let's recap the journey and plan your next steps. You'll pick up free AI Fluency courses and the simplest way to start this week.","audio":"lesson-12-intro.mp3","audioQ":"lesson-12-q1.mp3","questions":[{"q":"What is Claude, according to the course recap?","opts":["A collaborator, not a replacement","A replacement for humans","A video game","A search engine"],"a":0,"why":"The recap: Claude is a collaborator, not a replacement — best results when you bring expertise, context, judgment."}]},{"n":2,"title":"Level 2","badge":"🌠 Wisher","story":"Welcome to lesson twelve! Let's recap the journey and plan your next steps. You'll pick up free AI Fluency courses and the simplest way to start this week.","audio":"lesson-12-intro.mp3","audioQ":"lesson-12-q2.mp3","questions":[{"q":"What are the four AI Fluency courses called?","opts":["Read, Write, Run, Repeat","Delegation, Description, Discernment, Diligence","Chat, Cowork, Code, Create","Plan, Build, Ship, Scale"],"a":1,"why":"The free AI Fluency courses are Delegation, Description, Discernment, and Diligence."}]},{"n":3,"title":"Level 3","badge":"🔮 Seer","story":"Welcome to lesson twelve! Let's recap the journey and plan your next steps. You'll pick up free AI Fluency courses and the simplest way to start this week.","audio":"lesson-12-intro.mp3","audioQ":"lesson-12-q3.mp3","questions":[{"q":"What is the recommended first step after finishing the course?","opts":["Buy new hardware","Delete all your chats","Learn to code first","Pick one recurring task this week and try it with Claude"],"a":3,"why":"Start simple: pick one recurring task this week and try it with Claude."}]},{"n":4,"title":"Level 4","badge":"🧭 Voyager","story":"Welcome to lesson twelve! Let's recap the journey and plan your next steps. You'll pick up free AI Fluency courses and the simplest way to start this week.","audio":"lesson-12-intro.mp3","audioQ":"lesson-12-q4.mp3","questions":[{"q":"Where can you browse and connect integrations?","opts":["A shopping mall","The phone book","The Connector Directory at claude.ai/directory","A library card catalog"],"a":2,"why":"The Connector Directory (claude.ai/directory) is listed among the resources."}]},{"n":5,"title":"Level 5","badge":"🌟 Nova","story":"Welcome to lesson twelve! Let's recap the journey and plan your next steps. You'll pick up free AI Fluency courses and the simplest way to start this week.","audio":"lesson-12-intro.mp3","audioQ":"lesson-12-q5.mp3","questions":[{"q":"Are the AI Fluency courses free?","opts":["Only with Max plan","$99 each","Yes, free","No — they were canceled"],"a":2,"why":"The AI Fluency courses (Delegation, Description, Discernment, Diligence) are free."}]}]},"lesson-13":{"id":"lesson-13","title":"Other Ways to Work","badge":"🌐","color":"#38bdf8","outro":"Quest complete! You've mastered Claude 101 from first hello to every integration. Keep collaborating, keep questioning, and I'll see you in the next quest!","outroAudio":"lesson-13-outro.mp3","levels":[{"n":1,"title":"Level 1","badge":"🌐 Surfer","story":"Welcome to the final lesson! Claude is so much more than a website — Code, Slack, Excel, and Chrome integrations meet you where you already work. Let's explore them all!","audio":"lesson-13-intro.mp3","audioQ":"lesson-13-q1.mp3","questions":[{"q":"What is the core idea of this lesson?","opts":["You must only use claude.ai","claude.ai is just one interface; Claude spans many tools","Claude works only on desktop","Claude is being discontinued"],"a":1,"why":"Claude is an intelligence — claude.ai is just one interface; it meets you where you already work."}]},{"n":2,"title":"Level 2","badge":"📱 Tapper","story":"Welcome to the final lesson! Claude is so much more than a website — Code, Slack, Excel, and Chrome integrations meet you where you already work. Let's explore them all!","audio":"lesson-13-intro.mp3","audioQ":"lesson-13-q2.mp3","questions":[{"q":"What is Claude Code best for?","opts":["Building features, debugging, exploring codebases","Writing poems","Making phone calls","Editing photos"],"a":0,"why":"Claude Code is an agentic coding tool in terminal/IDE best for building features, debugging, and navigating codebases."}]},{"n":3,"title":"Level 3","badge":"💻 Dasher","story":"Welcome to the final lesson! Claude is so much more than a website — Code, Slack, Excel, and Chrome integrations meet you where you already work. Let's explore them all!","audio":"lesson-13-intro.mp3","audioQ":"lesson-13-q3.mp3","questions":[{"q":"How do you hand a coding task to Claude in Slack?","opts":["Tag @Claude","Call it on the phone","Send a fax","Mail a letter"],"a":0,"why":"Tag @Claude in Slack to hand off coding tasks; it can spin up Code sessions from bug reports."}]},{"n":4,"title":"Level 4","badge":"⌚ Timer","story":"Welcome to the final lesson! Claude is so much more than a website — Code, Slack, Excel, and Chrome integrations meet you where you already work. Let's explore them all!","audio":"lesson-13-intro.mp3","audioQ":"lesson-13-q4.mp3","questions":[{"q":"What does Claude for Excel do?","opts":["A sidebar for analysis, formulas, patterns, charts","Deletes your spreadsheets","Only opens CSV files","Plays music"],"a":0,"why":"Claude for Excel is a sidebar in Excel for analysis, formula help, pattern recognition, workbook editing, and visualizations."}]},{"n":5,"title":"Level 5","badge":"🎧 Listener","story":"Welcome to the final lesson! Claude is so much more than a website — Code, Slack, Excel, and Chrome integrations meet you where you already work. Let's explore them all!","audio":"lesson-13-intro.mp3","audioQ":"lesson-13-q5.mp3","questions":[{"q":"What is Claude for Chrome?","opts":["A browser extension overlay — summarize pages, draft emails","A new web browser","A VPN service","An ad blocker"],"a":0,"why":"Claude for Chrome is a browser extension that works as an overlay with no tab switching."}]}]}};
+const ORDER = ["lesson-01", "lesson-02", "lesson-03", "lesson-04", "lesson-05", "lesson-06", "lesson-07", "lesson-08", "lesson-09", "lesson-10", "lesson-11", "lesson-12", "lesson-13"];
+const CROWNS = {"lesson-01": "Claude Cadet", "lesson-02": "Conversation Captain", "lesson-03": "Prompt Pro", "lesson-04": "Mode Master", "lesson-05": "Project Pilot", "lesson-06": "Artifact Artist", "lesson-07": "Skill Smith", "lesson-08": "Connector Captain", "lesson-09": "Search Sage", "lesson-10": "Research Ranger", "lesson-11": "Use-Case Ace", "lesson-12": "Future Finder", "lesson-13": "Omni Operator"};
+const COURSE_URL = "https://academy.claude.com/courses/claude-101";
+
+function packOf(id){ return PACKS[id]; }
+function audioMissingMsg(){ return "\uD83C\uDFA7 audio not found \u2014 extract the audio zips next to this file."; }
+/* ---------- audio folder picker (Android local-file fix) ---------- */
+var AUDIO_INDEX = {};
+/* Mobile-safe folder pick: hidden webkitdirectory file input works on Android
+   Chrome. (The File System Access directory picker API is desktop-only and
+   undefined on Android, so it is never used here.) */
+var _audioDirInput = null;
+function getAudioDirInput(){
+  if(_audioDirInput) return _audioDirInput;
+  var inp = document.createElement("input");
+  inp.type = "file";
+  inp.setAttribute("webkitdirectory", "");
+  inp.setAttribute("directory", "");
+  inp.multiple = true;
+  inp.accept = ".mp3,audio/mpeg";
+  inp.style.display = "none";
+  inp.addEventListener("change", function(){
+    AUDIO_INDEX = {};
+    var files = inp.files || [];
+    for(var i=0; i<files.length; i++){
+      var f = files[i];
+      if(/\.mp3$/i.test(f.name)){ AUDIO_INDEX[f.name] = f; }
+    }
+    var n = Object.keys(AUDIO_INDEX).length;
+    var b1 = document.getElementById("btn-pick-audio");
+    if(b1) b1.textContent = n>0 ? "\uD83D\uDCC1 Audio linked ("+n+" files) - tap to change folder" : "\uD83D\uDCC1 Find my audio files";
+    var b2 = document.getElementById("btn-pick-audio-2");
+    if(b2) b2.textContent = n>0 ? "\uD83D\uDCC1 Audio linked ("+n+" files) - tap to change folder" : "\uD83D\uDCC1 Find my audio files";
+    if(n > 0 && typeof cur !== "undefined" && cur && cur.cid && typeof openCourse === "function"){ try{ openCourse(cur.cid); }catch(x){} }
+    alert(n>0 ? ("Found "+n+" audio files. Listen buttons will now play.") : "No MP3 files found in that folder - pick the Game folder.");
+    inp.value = "";
+  });
+  document.body.appendChild(inp);
+  _audioDirInput = inp;
+  return inp;
+}
+function resolveAudio(name){
+  try{ var f = AUDIO_INDEX[name]; if(f) return URL.createObjectURL(f); }catch(e){}
+  return name;
+}
+async function pickAudioFolder(){
+  /* Works on Android Chrome and desktop Chrome: tap opens the folder picker,
+     subfolders are scanned automatically. */
+  getAudioDirInput().click();
+}
+
+/* ---------- save ---------- */
+const SAVE_KEY = "claudeQuestV1";
+function loadSave(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){ return null; } }
+let save = loadSave() || {courses:{}};
+function csave(id){
+  if(!save.courses[id]) save.courses[id] = {xp:0, unlocked:1, badges:[]};
+  return save.courses[id];
+}
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(save)); }catch(e){} }
+function totalXP(){ let t=0; ORDER.forEach(function(id){ t += csave(id).xp; }); return t; }
+function totalBadges(){ let t=0; ORDER.forEach(function(id){ t += csave(id).badges.length; }); return t; }
+function totalLevels(){ let t=0; ORDER.forEach(function(id){ t += packOf(id).levels.length; }); return t; }
+
+let cur = null; // {cid, li, qi, hearts, streak, levelXP, best}
+
+/* ---------- navigation ---------- */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+function shortTitle(t){ return t.replace(/^Level \d+ — /,""); }
+function badgeEm(b){ return b.split(" ")[0]; }
+
+/* ---------- listen-button toggle helper ---------- */
+function resetPlayer(wrapId, playerId, missId){
+  var pw=document.getElementById(wrapId), pl=document.getElementById(playerId), am=document.getElementById(missId);
+  try{ pl.pause(); }catch(e){}
+  pl.removeAttribute("src"); pl.load(); pl.style.display="";
+  pw.style.display="none"; am.style.display="none";
+}
+function toggleListen(wrapId, playerId, missId, filename){
+  var pw=document.getElementById(wrapId), pl=document.getElementById(playerId), am=document.getElementById(missId);
+  if(pw.style.display === "none"){
+    pl.src = resolveAudio(filename); pw.style.display="block"; am.style.display="none";
+    pl.onerror = function(){ pl.style.display="none"; am.style.display=""; am.textContent = audioMissingMsg(); };
+    pl.oncanplay = function(){ pl.style.display=""; };
+    pl.play().catch(function(){});
+  } else { pl.pause(); pw.style.display="none"; }
+}
+
+function renderHome(){
+  document.getElementById("home-xp").textContent = totalXP();
+  document.getElementById("home-badges").textContent = totalBadges();
+  document.getElementById("home-bar").style.width = (totalBadges()/totalLevels()*100)+"%";
+  const pb = document.getElementById("path-banner");
+  pb.innerHTML = "<b>🗺️ Play in order:</b><br>" + ORDER.map(function(id,i){
+    return (i+1)+". "+packOf(id).title;
+  }).join(" &nbsp;→&nbsp; ");
+  const w = document.getElementById("worlds"); w.innerHTML = "";
+  ORDER.forEach(function(id){
+    const P = packOf(id), cs = csave(id);
+    const pct = P.levels.length ? (cs.badges.length/P.levels.length*100) : 0;
+    const d = document.createElement("div");
+    d.className = "world";
+    d.style.borderColor = P.color;
+    d.innerHTML = '<div class="em">'+P.badge+'</div>'+
+      '<div class="wt">'+P.title+'</div>'+
+      '<div class="wl">'+P.levels.length+' levels</div>'+
+      '<div class="wbar"><div style="width:'+pct+'%"></div></div>'+
+      '<div class="wp">🏅 '+cs.badges.length+'/'+P.levels.length+' &nbsp; ⚡ '+cs.xp+'</div>';
+    d.onclick = function(){ openCourse(id); };
+    w.appendChild(d);
+  });
+}
+
+function openCourse(id){
+  const P = packOf(id), cs = csave(id);
+  cur = {cid:id};
+  document.getElementById("course-emoji").textContent = P.badge;
+  document.getElementById("course-title").textContent = P.title;
+  document.getElementById("course-sub").textContent = P.levels.length+" levels. 3 hearts per level. Earn the 👑 "+CROWNS[id]+" crown.";
+  document.getElementById("course-xp").textContent = cs.xp;
+  document.getElementById("course-badges").textContent = cs.badges.length;
+  document.getElementById("course-total").textContent = P.levels.length;
+  document.getElementById("course-bar").style.width = (cs.badges.length/P.levels.length*100)+"%";
+  const br = document.getElementById("course-badge-row"); br.innerHTML = "";
+  cs.badges.forEach(function(b){ const s=document.createElement("span"); s.className="badge"; s.textContent=b; br.appendChild(s); });
+  const map = document.getElementById("cmap"); map.innerHTML = "";
+  P.levels.forEach(function(L,i){
+    const done = cs.badges.indexOf(L.badge) >= 0;
+    const locked = L.n > cs.unlocked;
+    const d = document.createElement("div");
+    d.className = "node"+(done?" done":"")+(locked?" locked":"")+((!locked&&!done)?" current":"");
+    d.innerHTML = '<div class="em">'+(locked?"🔒":badgeEm(L.badge))+'</div><div>Level '+L.n+'</div>';
+    if(!locked) d.onclick = function(){ openIntro(id, i); };
+    map.appendChild(d);
+  });
+  document.getElementById("btn-continue").textContent =
+    (cs.badges.length>=P.levels.length) ? "🏆 View your crown" :
+    (cs.badges.length ? "▶ Continue — Level "+cs.unlocked : "▶ Start — Level 1");
+  show("scr-course");
+}
+
+function openIntro(cid, i){
+  const P = packOf(cid), L = P.levels[i];
+  document.getElementById("intro-kicker").textContent = P.title.toUpperCase()+" — LEVEL "+L.n+" OF "+P.levels.length;
+  document.getElementById("intro-title").textContent = L.badge+" "+shortTitle(L.title);
+  document.getElementById("intro-story").textContent = L.story;
+  const link = document.getElementById("intro-link");
+  link.href = COURSE_URL;
+  link.textContent = "Read the lesson on Claude Academy";
+  document.getElementById("btn-start-quiz").textContent = "🎮 Start mission — "+L.questions.length+" question"+(L.questions.length===1?"":"s");
+  cur = {cid:cid, li:i, qi:0, hearts:3, streak:0, levelXP:0, best:0};
+  resetPlayer("lesson-player-wrap","lesson-player","lesson-audio-missing");
+  show("scr-intro");
+}
+
+function startQuiz(){ resetPlayer("lesson-player-wrap","lesson-player","lesson-audio-missing"); renderQ(); show("scr-quiz"); }
+
+function renderQ(){
+  const P = packOf(cur.cid), L = P.levels[cur.li], Q = L.questions[cur.qi];
+  const cs = csave(cur.cid);
+  const h = Math.max(cur.hearts,0);
+  document.getElementById("quiz-hearts").textContent = "❤️".repeat(h)+"🤍".repeat(3-h);
+  document.getElementById("quiz-streak").textContent = cur.streak;
+  document.getElementById("quiz-xp").textContent = totalXP() + cur.levelXP;
+  document.getElementById("quiz-bar").style.width = (cur.qi/L.questions.length*100)+"%";
+  document.getElementById("quiz-qnum").textContent = "Question "+(cur.qi+1)+" of "+L.questions.length;
+  document.getElementById("quiz-q").textContent = Q.q;
+  resetPlayer("quiz-player-wrap","quiz-player","quiz-audio-missing");
+  const box = document.getElementById("quiz-opts"); box.innerHTML="";
+  const why = document.getElementById("quiz-why");
+  why.style.display="none"; why.textContent="";
+  const next = document.getElementById("btn-next"); next.style.display="none";
+  Q.opts.forEach(function(opt,idx){
+    const b = document.createElement("button");
+    b.className="btn"; b.textContent=opt;
+    b.onclick = function(){ answer(idx,b); };
+    box.appendChild(b);
+  });
+}
+
+function answer(idx,btn){
+  const P = packOf(cur.cid), L = P.levels[cur.li], Q = L.questions[cur.qi];
+  const btns = Array.prototype.slice.call(document.getElementById("quiz-opts").children);
+  btns.forEach(function(b){ b.disabled=true; });
+  const why = document.getElementById("quiz-why");
+  if(idx===Q.a){
+    btn.classList.add("correct");
+    cur.streak++;
+    if(cur.streak>cur.best) cur.best=cur.streak;
+    let pts = 100;
+    if(cur.streak>=3) pts += 25;
+    cur.levelXP += pts;
+    why.innerHTML = "✅ <b>+"+pts+" XP"+(cur.streak>=3?" — streak bonus!":"")+"</b><br>"+Q.why;
+  }else{
+    btn.classList.add("wrong");
+    btns[Q.a].classList.add("correct");
+    cur.hearts--;
+    cur.streak=0;
+    why.innerHTML = "❌ <b>Not quite.</b><br>"+Q.why;
+  }
+  why.style.display="block";
+  const h = Math.max(cur.hearts,0);
+  document.getElementById("quiz-hearts").textContent = "❤️".repeat(h)+"🤍".repeat(3-h);
+  const next = document.getElementById("btn-next");
+  next.style.display="block";
+  next.textContent = (cur.qi===L.questions.length-1) ? "Finish level 🏁" : "Next →";
+  next.onclick = function(){
+    if(cur.hearts<=0){ show("scr-fail"); return; }
+    if(cur.qi>=L.questions.length-1){ completeLevel(); return; }
+    cur.qi++; renderQ();
+  };
+}
+
+function completeLevel(){
+  const P = packOf(cur.cid), L = P.levels[cur.li], cs = csave(cur.cid);
+  cs.xp += cur.levelXP;
+  if(cs.badges.indexOf(L.badge)<0) cs.badges.push(L.badge);
+  if(L.n===cs.unlocked && cs.unlocked<P.levels.length) cs.unlocked++;
+  persist();
+  document.getElementById("done-badge-em").textContent = badgeEm(L.badge);
+  document.getElementById("done-title").textContent = L.badge+" earned!";
+  document.getElementById("done-sub").textContent = shortTitle(L.title)+" — mission complete.";
+  document.getElementById("done-xp").textContent = cur.levelXP;
+  document.getElementById("done-streak").textContent = cur.best>=3 ? ("🔥 Best streak: "+cur.best+" in a row!") : "";
+  document.getElementById("done-outro").textContent = P.outro;
+  resetPlayer("outro-player-wrap","outro-player","outro-audio-missing");
+  const nb = document.getElementById("btn-next-level");
+  if(L.n>=P.levels.length){ nb.textContent="👑 Claim your crown"; nb.onclick=function(){ showCrown(cur.cid); }; }
+  else { nb.textContent="Next level →"; nb.onclick=function(){ const cid=cur.cid, li=cur.li; openIntro(cid, li+1); }; }
+  show("scr-complete");
+}
+
+function showCrown(cid){
+  const P = packOf(cid), cs = csave(cid);
+  document.getElementById("crown-title").textContent = CROWNS[cid]+"!";
+  document.getElementById("crown-sub").textContent = "You conquered all "+P.levels.length+" levels of "+P.title+".";
+  document.getElementById("crown-xp").textContent = cs.xp;
+  document.getElementById("crown-count").textContent = P.levels.length+" / "+P.levels.length+" badges earned";
+  const br = document.getElementById("crown-badges"); br.innerHTML="";
+  cs.badges.forEach(function(b){
+    const s=document.createElement("span"); s.className="badge"; s.textContent=b; br.appendChild(s);
+  });
+  cur = {cid:cid};
+  show("scr-crown");
+}
+
+document.getElementById("btn-course-back").onclick = function(){ renderHome(); show("scr-home"); };
+document.getElementById("btn-pick-audio").onclick = pickAudioFolder;
+document.getElementById("btn-pick-audio-2").onclick = pickAudioFolder;
+document.getElementById("btn-pick-audio-3").onclick = pickAudioFolder;
+document.getElementById("btn-continue").onclick = function(){
+  const P = packOf(cur.cid), cs = csave(cur.cid);
+  if(cs.badges.length>=P.levels.length){ showCrown(cur.cid); return; }
+  openIntro(cur.cid, Math.min(cs.unlocked,P.levels.length)-1);
+};
+document.getElementById("btn-reset-course").onclick = function(){
+  const P = packOf(cur.cid);
+  if(confirm("Reset all "+P.title+" progress?")){ save.courses[cur.cid]={xp:0,unlocked:1,badges:[]}; persist(); openCourse(cur.cid); }
+};
+document.getElementById("btn-reset-all").onclick = function(){
+  if(confirm("Reset ALL Claude Quest progress (all 13 worlds)?")){ save={courses:{}}; persist(); renderHome(); }
+};
+document.getElementById("btn-start-quiz").onclick = startQuiz;
+document.getElementById("btn-listen-lesson").onclick = function(){
+  if(!cur) return;
+  const L = packOf(cur.cid).levels[cur.li];
+  toggleListen("lesson-player-wrap","lesson-player","lesson-audio-missing", L.audio);
+};
+document.getElementById("btn-listen-q").onclick = function(){
+  if(!cur) return;
+  const L = packOf(cur.cid).levels[cur.li];
+  toggleListen("quiz-player-wrap","quiz-player","quiz-audio-missing", L.audioQ);
+};
+document.getElementById("btn-listen-outro").onclick = function(){
+  if(!cur) return;
+  const P = packOf(cur.cid);
+  toggleListen("outro-player-wrap","outro-player","outro-audio-missing", P.outroAudio);
+};
+document.getElementById("btn-back-course").onclick = function(){ openCourse(cur.cid); };
+document.getElementById("btn-done-course").onclick = function(){ openCourse(cur.cid); };
+document.getElementById("btn-retry").onclick = function(){ openIntro(cur.cid, cur.li); };
+document.getElementById("btn-fail-course").onclick = function(){ openCourse(cur.cid); };
+document.getElementById("btn-crown-course").onclick = function(){ openCourse(cur.cid); };
+document.getElementById("btn-crown-home").onclick = function(){ renderHome(); show("scr-home"); };
+renderHome();
+</script>
+
+</body>
+</html>
+<!-- Adapted by Teri, powered by Muse Spark (Meta). -->
